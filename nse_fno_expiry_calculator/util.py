@@ -1,22 +1,22 @@
 import pendulum
 from pendulum.date import Date
+import logging
 
-listOfNseHolidays = [
-    Date(2021, 1, 26),  # Republic Day
-    Date(2021, 3, 11),  # Maha Shivaratri
-    Date(2021, 3, 29),  # Holi
-    Date(2021, 4, 2),  # Good Friday
-    Date(2021, 4, 14),  # Dr.Baba Saheb Ambedkar Jayanti
-    Date(2021, 4, 21),  # Ram Navami
-    Date(2021, 5, 13),  # Id-ul-Fitr
-    Date(2021, 7, 21),  # Id-al-Adha
-    Date(2021, 8, 19),  # Ashura
-    Date(2021, 9, 10),  # Ganesh Chaturthi
-    Date(2021, 10, 15),  # Vijaya Dashami
-    Date(2021, 11, 5),  # Diwali/Laxmi Puja
-    Date(2021, 11, 19)   # Guru Nanak Jayanti
-]
-
+listOfNseHolidays = set([
+    Date(2022, 1, 26),  # Republic Day
+    Date(2022, 3, 1),  # Maha Shivaratri
+    Date(2022, 3, 18),  # Holi
+    Date(2022, 4, 14),  # Dr.Baba Saheb Ambedkar Jayanti
+    Date(2022, 4, 15),  # Good friday
+    Date(2022, 5, 3),  # Id-ul-Fitr
+    Date(2022, 8, 9),  # Moharram
+    Date(2022, 8, 15),  # Independence Day
+    Date(2022, 8, 31),  # Ganesh Chaturthi
+    Date(2022, 10, 5),  # Vijaya Dashami
+    Date(2022, 10, 24),  # Diwali-Laxmi Pujan
+    Date(2022, 10, 26),  # Diwali-Balipratipada
+    Date(2022, 11, 8)   # Guru Nanak Jayanti
+])
 
 def getNearestWeeklyExpiryDate():
     expiryDate = None
@@ -24,7 +24,7 @@ def getNearestWeeklyExpiryDate():
         expiryDate = pendulum.now()
     else:
         expiryDate = pendulum.now().next(pendulum.THURSDAY)
-    return considerHolidayList(expiryDate).date()
+    return __considerHolidayList(expiryDate).date()
 
 
 def getNextWeeklyExpiryDate():
@@ -33,14 +33,14 @@ def getNextWeeklyExpiryDate():
         expiryDate = pendulum.now().next(pendulum.THURSDAY)
     else:
         expiryDate = pendulum.now().next(pendulum.THURSDAY).next(pendulum.THURSDAY)
-    return considerHolidayList(expiryDate).date()
+    return __considerHolidayList(expiryDate).date()
 
 
 def getNearestMonthlyExpiryDate():
     expiryDate = pendulum.now().last_of('month', pendulum.THURSDAY)
     if(pendulum.now().date() > expiryDate.date()):
         expiryDate = pendulum.now().add(months=1).last_of('month', pendulum.THURSDAY)
-    return considerHolidayList(expiryDate).date()
+    return __considerHolidayList(expiryDate).date()
 
 
 def getNextMonthlyExpiryDate():
@@ -49,14 +49,13 @@ def getNextMonthlyExpiryDate():
         expiryDate = pendulum.now().add(months=2).last_of('month', pendulum.THURSDAY)
     else:
         expiryDate = pendulum.now().add(months=1).last_of('month', pendulum.THURSDAY)
-    return considerHolidayList(expiryDate).date()
+    return __considerHolidayList(expiryDate).date()
+
 
 # utility method to be used only by this module
-
-
-def considerHolidayList(expiryDate: Date):
+def __considerHolidayList(expiryDate: Date):
     if(expiryDate.date() in listOfNseHolidays):
-        return considerHolidayList(expiryDate.subtract(days=1))
+        return __considerHolidayList(expiryDate.subtract(days=1))
     else:
         return expiryDate
 
